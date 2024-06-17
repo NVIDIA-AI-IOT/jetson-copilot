@@ -1,0 +1,1 @@
+Documents directory for storing directories for each index building.

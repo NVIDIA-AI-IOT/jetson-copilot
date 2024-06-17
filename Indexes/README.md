@@ -1,0 +1,1 @@
+Indexes directory for the Jetson Copilot app to store built indexes.
