@@ -66,15 +66,17 @@ When you access the web UI for the first time, it will dowload the default LLM (
 
 ### 0. Interact with the plain Llama3 (8b)
 
+https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/6aed539c-08b3-448f-8cbc-3e20abfa782f
+
 You can use Jetson Copilot just to interact with a LLM withut enabling RAG feature.
 
 By default, Llama3 (8b) model is downloaded when running for the first time and use as the default LLM.
 
 You will be surprized how much a model like Llama3 is capable, but may soon find limitations as it does not have information prior to its cutoff date nor know anything about your specific subject matter.
 
-https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/6aed539c-08b3-448f-8cbc-3e20abfa782f
-
 ### 1. Ask Jetson related question using pre-built index
+
+https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/c187f0de-a998-463e-acf8-2e793e523e98
 
 On the side panel, you can toggle "Use RAG" on to enable RAG pipeline.<br>
 The LLM will have an access to a custom knowledge/index that is selected under "Index".
@@ -90,9 +92,9 @@ You can ask questions like:
 What IP address does Jetson gets assigned when connected to a PC via a USB cable in USB Device Mode?
 ```
 
-https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/c187f0de-a998-463e-acf8-2e793e523e98
-
 ### 2. Build your own index based on your documents
+
+https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/c333833a-9a4a-4d57-9216-d3d464466d3c
 
 You can build your own index based on your local and/or online documents.
 
@@ -130,9 +132,7 @@ Finally, hit "**Build Index**" button.<br>
 It will show the progress in the drop-down "status container", so you can check the status by clicking on it.<br>
 Once done, it will show the summary of your index and time it took.
 
-You can now go back to the home screen to now select the index you just made.
-
-https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/c333833a-9a4a-4d57-9216-d3d464466d3c
+You can go back to the home screen to now select the index you just built.
 
 ### 3. Test different LLM or Embedding model
 
@@ -213,7 +213,7 @@ Developers can use Jetson Copilot as a reference for building their own AI assis
 Please see LICENSE.txt.
 
 ## 📜 Project status
-Internally staged, still developing.
+Pushed to public, still partially in development.
 
 ### TODO
 
