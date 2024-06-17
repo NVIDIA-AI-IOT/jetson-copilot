@@ -40,6 +40,9 @@ cd jetson-copilot
 ./launch_jetson_copilot.sh
 ```
 
+https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/e2e99d47-7a17-4b1b-870a-d5d376e2cae3
+
+
 This will start a Docker container and start a Streamlit app inside the container, which runs a web app. It will shows the URL on the console in order to access the web app hosted on your Jetson.
 
 > [!NOTE]
@@ -84,6 +87,8 @@ You can ask questions like:
 ```
 What IP address does Jetson gets assigned when connected to a PC via a USB cable in USB Device Mode?
 ```
+
+https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/c187f0de-a998-463e-acf8-2e793e523e98
 
 ### 2. Build your own index based on your documents
 
