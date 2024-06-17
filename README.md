@@ -193,7 +193,7 @@ Following directories inside the `jetson-copilot` directory are mounted in the D
 | `Docuemtns`    | Directory to store your documents to be indexed |
 | `Indexes`      | Directory to store pre-built (or built-by-you) indexes for LLM to perform RAG on |
 | `logs`         | Directory for the app to store log files |
-| `logs`         | Directory for the ollama server to store download models |
+| `ollama_models`| Directory for the ollama server to store download models |
 | `stremlit_app` | Directory for Python scripts to make up the web app |
 
 
