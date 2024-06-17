@@ -67,6 +67,8 @@ By default, Llama3 (8b) model is downloaded when running for the first time and 
 
 You will be surprized how much a model like Llama3 is capable, but may soon find limitations as it does not have information prior to its cutoff date nor know anything about your specific subject matter.
 
+https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/6aed539c-08b3-448f-8cbc-3e20abfa782f
+
 ### 1. Ask Jetson related question using pre-built index
 
 On the side panel, you can toggle "Use RAG" on to enable RAG pipeline.<br>
