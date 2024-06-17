@@ -108,7 +108,7 @@ wget https://developer.nvidia.com/downloads/assets/embedded/secure/jetson/orin_n
 Now back on the web UI, open the side bar, toggle on "Use RAG", then click on "**➕Build a new index**" to jump to a "**Build Index**" page.
 
 Give a name for the Index you are to build. (e.g. "JON Carrier Board")<br>
-Type in the field and hit ++enter++ key, then it will check and show what path will be created for your index.
+Type in the field and hit `Enter` key, then it will check and show what path will be created for your index.
 
 > ![alt text](index_name_checked.png)
 
