@@ -132,6 +132,8 @@ Once done, it will show the summary of your index and time it took.
 
 You can now go back to the home screen to now select the index you just made.
 
+https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/c333833a-9a4a-4d57-9216-d3d464466d3c
+
 ### 3. Test different LLM or Embedding model
 
 TODO
