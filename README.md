@@ -42,15 +42,17 @@ cd jetson-copilot
 
 https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/e2e99d47-7a17-4b1b-870a-d5d376e2cae3
 
+This will start a Docker container and start a Ollama server and Streamlit app inside the container. It will shows the URL on the console in order to access the web app hosted on your Jetson.
 
-This will start a Docker container and start a Streamlit app inside the container, which runs a web app. It will shows the URL on the console in order to access the web app hosted on your Jetson.
+With your web browser on Jetson, open the **Local URL** (`localhost`). Or on a PC connected on the same network as on your Jetson, access the **Network URL**.
+
+```
+Local URL: http://localhost:8501
+Netwowrk URL: http://10.110.50.252:8501 
+```
 
 > [!NOTE]
 > You will need the Internet connection on Jetson when it launches for the first time, as it will pull the container image (and download the default LLM and embedding model when web UI starts for the first time).
-
-```
-http://192.168.1.xyz:8501
-```
 
 When you access the web UI for the first time, it will dowload the default LLM (`llama3`) and the embedding model (`mxbai-embed-large`).
 
@@ -133,6 +135,31 @@ You can now go back to the home screen to now select the index you just made.
 ### 3. Test different LLM or Embedding model
 
 TODO
+
+## Development
+
+Streamlit based web app is very easy to develop.
+
+On web UI, at the top-right of the screen to choose "**Always rerun**" to automatically update your app every time you change the source codes.
+
+See [Streamlit Documentation](https://docs.streamlit.io/get-started/fundamentals/main-concepts#development-flow) for the detail.
+
+### Manually run streamlit app inside the container
+
+In case you make more fundamental changes, you can also manually run streamlit app.
+
+```
+cd jetson-copilot
+./launch_dev.sh
+```
+
+Once in container;
+
+```
+streamlit run app.py
+```
+
+https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/7ec4552a-bd55-4325-8167-d8429324b1bd
 
 ## 🧱 Directory structure
 
