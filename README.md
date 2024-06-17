@@ -7,13 +7,15 @@ It deonstrates two things;
 - Running open-source LLMs (large language model) on device
 - Augumenting the LLM to have access to your locally indexed knowledge (**RAG**, retrieval-augmented generation)
 
-It internally utlizes the following open-source software/framework:
-
-| OSS | Repo URL | Usage |
-| --- | --- | ----- |
-|[Ollama](https://www.ollama.com/)|[GitHub](https://github.com/ollama/ollama)|To host and run LLMs locally, including embedding models for building index from documents |
-| [LlamaIndex](https://www.llamaindex.ai/) | [GitHub](https://github.com/run-llama/llama_index) | Data framework for LLM, used mainly to realize RAG pipeline. |
-| [Streamlit](https://streamlit.io/) | [GitHub](https://github.com/streamlit/streamlit) | Python library to create an interactive web app |
+> [!IMPORTANT]
+> 
+> This project will download and install additional third-party open source software projects. Review the license terms of these open source projects before use.
+> 
+> | OSS | Repo URL | Usage |
+> | --- | --- | ----- |
+> |[Ollama](https://www.ollama.com/)|[GitHub](https://github.com/ollama/ollama)|To host and run LLMs locally, including embedding models for building index from documents |
+> | [LlamaIndex](https://www.llamaindex.ai/) | [GitHub](https://github.com/run-llama/llama_index) | Data framework for LLM, used mainly to realize RAG pipeline. |
+> | [Streamlit](https://streamlit.io/) | [GitHub](https://github.com/streamlit/streamlit) | Python library to create an interactive web app |
 
 
 ## 🏃 Getting started
