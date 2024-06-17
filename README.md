@@ -101,13 +101,13 @@ Now back on the web UI, open the side bar, toggle on "Use RAG", then click on "*
 Give a name for the Index you are to build. (e.g. "JON Carrier Board")<br>
 Type in the field and hit ++enter++ key, then it will check and show what path will be created for your index.
 
-![alt text](index_name_checked.png)
+> ![alt text](index_name_checked.png)
 
 And then from the drop select box under "**Local documents**", select the directory you created and saved your documents in. (e.g. `/opt/jetson_copilot/Documents/Jetson-Orin-Nano`).
 
 It will show the summary of files found in the selected directory.
 
-![alt text](local_documents_selected.png)
+> ![alt text](local_documents_selected.png)
 
 If you want to rather only or additionally supply URLs for the online docuemnts to be ingested, fill the text area with one URL per a line.<br>
 You can skip this if you are building your index only based on your local documents.
@@ -138,6 +138,10 @@ TODO
     ├── Indexes
     │   ├── _L4T_README
     │   └── your_abc_index
+    ├── logs
+    │   ├── container.log
+    │   └── ollama.log
+    ├── ollama_models
     └── Streamlit_app
         ├── app.py
         ├── build_index.py
@@ -150,7 +154,9 @@ Following directories inside the `jetson-copilot` directory are mounted in the D
 | -------------- | ----------- |
 | `Docuemtns`    | Directory to store your documents to be indexed |
 | `Indexes`      | Directory to store pre-built (or built-by-you) indexes for LLM to perform RAG on |
-| `Stremlit_app` | Directory to store Python scripts to make up the Streamlit app |
+| `logs`         | Directory for the app to store log files |
+| `logs`         | Directory for the ollama server to store download models |
+| `stremlit_app` | Directory for Python scripts to make up the web app |
 
 
 ## Supposed usage
