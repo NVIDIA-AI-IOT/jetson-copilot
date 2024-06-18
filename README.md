@@ -24,7 +24,7 @@ It deonstrates two things;
 
 If this is your first time to run Jetson Copilot on your Jetson, first run `setup.sh` to ensure you have all the necessary software installed and the environment set up. 
 
-```
+```bash
 git clone https://github.com/NVIDIA-AI-IOT/jetson-copilot/
 cd jetson-copilot
 ./setup_environment.sh
@@ -37,7 +37,7 @@ It will install the following, if not yet.
 
 ### How to start Jetson Copilot
 
-```
+```bash
 cd jetson-copilot
 ./launch_jetson_copilot.sh
 ```
@@ -48,9 +48,9 @@ This will start a Docker container and start a Ollama server and Streamlit app i
 
 With your web browser on Jetson, open the **Local URL** (`localhost`). Or on a PC connected on the same network as on your Jetson, access the **Network URL**.
 
-```
+```bash
 Local URL: http://localhost:8501
-Netwowrk URL: http://10.110.50.252:8501 
+Network URL: http://10.110.50.252:8501 
 ```
 
 > [!NOTE]
@@ -102,7 +102,7 @@ You can build your own index based on your local and/or online documents.
 
 First, on the console (or on the desktop) create a directory under `Documents` directory to store your documents.
 
-```
+```bash
 cd jetson-copilot
 mkdir Documents/Jetson-Orin-Nano
 cd Documents/Jetson-Orin-Nano
@@ -140,7 +140,7 @@ You can go back to the home screen to now select the index you just built.
 
 TODO
 
-## Development
+## 🏗️ Development
 
 Streamlit based web app is very easy to develop.
 
@@ -152,14 +152,14 @@ See [Streamlit Documentation](https://docs.streamlit.io/get-started/fundamentals
 
 In case you make more fundamental changes, you can also manually run streamlit app.
 
-```
+```bash
 cd jetson-copilot
 ./launch_dev.sh
 ```
 
 Once in container;
 
-```
+```bash
 streamlit run app.py
 ```
 
@@ -196,6 +196,10 @@ Following directories inside the `jetson-copilot` directory are mounted in the D
 | `ollama_models`| Directory for the ollama server to store download models |
 | `stremlit_app` | Directory for Python scripts to make up the web app |
 
+
+## 💫 Troubleshooting
+
+If you find any issue, please check [GitHub Issues of the Jetson Copilot repo](https://github.com/NVIDIA-AI-IOT/jetson-copilot/issues).
 
 ## Supposed usage
 
