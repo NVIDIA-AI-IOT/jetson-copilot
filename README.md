@@ -22,7 +22,7 @@ It deonstrates two things;
 
 ### First time setup
 
-If this is your first time to run Jetson Copilot on your Jetson, first run `setup.sh` to ensure you have all the necessary software installed and the environment set up. 
+If this is your first time to run Jetson Copilot on your Jetson, first run `setup_environment.sh` to ensure you have all the necessary software installed and the environment set up. 
 
 ```bash
 git clone https://github.com/NVIDIA-AI-IOT/jetson-copilot/
