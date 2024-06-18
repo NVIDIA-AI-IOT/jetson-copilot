@@ -216,7 +216,7 @@ They may find the AI assistantce on some tasks useful, like to find out the righ
 Developers can use Jetson Copilot as a reference for building their own AI assistant that poseses some specific domain area's or product's knowledge.
 
 ## ⚖️ License
-Please see LICENSE.txt.
+Please see LICENSE file.
 
 ## 📜 Project status
 Pushed to public, still partially in development.
