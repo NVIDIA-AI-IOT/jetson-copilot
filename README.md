@@ -144,7 +144,7 @@ TODO
 
 Streamlit based web app is very easy to develop.
 
-On web UI, at the top-right of the screen to choose "**Always rerun**" to automatically update your app every time you change the source codes.
+On web UI, at the top-right of the screen, choose "**Always rerun**" to automatically update your app every time you change the source codes.
 
 See [Streamlit Documentation](https://docs.streamlit.io/get-started/fundamentals/main-concepts#development-flow) for the detail.
 
