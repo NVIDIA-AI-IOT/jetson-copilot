@@ -157,6 +157,12 @@ if [ "$flag_install_docker" = true ]; then
 
 	# Restart Docker
 	sudo systemctl daemon-reload && sudo systemctl restart docker
+fi
+
+if id -nG "$USER" | grep -qw docker; then
+    log "[INFO] User '$USER' is already in 'docker' group."
+else
+    log "[WARN] User '$USER' is not in 'docker' group. Going to register in the group."
 
 	# Execute newgrp command at last as it resets the bash session
 	log "[WARN] newgrp command is executed, and your bash session is reset."
