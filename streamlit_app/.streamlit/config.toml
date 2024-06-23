@@ -5,7 +5,7 @@ showSidebarNavigation = false
 enableStaticServing = false
 
 [theme]
-primaryColor="#76B900"
+primaryColor="#410099"
 backgroundColor="#FFFFFF"
 secondaryBackgroundColor="#EFEFEF"
 textColor="#141309"

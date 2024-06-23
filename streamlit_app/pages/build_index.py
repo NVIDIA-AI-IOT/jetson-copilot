@@ -1,15 +1,23 @@
-import ollama
-import openai
+#import ollama
+#import openai
 import streamlit as st
 import pandas as pd
 
 from llama_index.core import VectorStoreIndex, Settings, SimpleDirectoryReader
 from llama_index.llms.ollama import Ollama
 from llama_index.core.memory import ChatMemoryBuffer
-from llama_index.embeddings.ollama import OllamaEmbedding
-from llama_index.embeddings.openai import OpenAIEmbedding
+#from llama_index.embeddings.ollama import OllamaEmbedding
+#from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import SummaryIndex
 from llama_index.readers.web import SimpleWebPageReader
+from llama_index.readers.file import PyMuPDFReader
+from llama_index.readers.web import WholeSiteReader
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 from PIL import Image
 import time
@@ -25,16 +33,15 @@ sys.path.insert(0, parent_dir)
 import utils.func 
 import utils.constants as const
 
+ETH_LOGO = Image.open('./images/logo.png')
+ECP_LOGO = Image.open('./images/ecp_logo.png')
+
 def on_settings_change():
     logging.info(" --- settings updated ---")
 
 def on_local_model_change():
-    Settings.embed_model = OllamaEmbedding(model_name=st.session_state.my_local_model)
+    Settings.embed_model = HuggingFaceEmbedding(model_name="WhereIsAI/UAE-Large-V1", trust_remote_code=True)
     logging.info(f" --- Settings.embed_model=OllamaEmbedding(model_name={st.session_state.my_local_model}) ---")
-
-def on_openai_model_change():
-    Settings.embed_model = OpenAIEmbedding(model_name=st.session_state.my_openai_model, dimeonsions=1024)
-    logging.info(f" --- Settings.embed_model=OpenAIEmbedding(model_name={st.session_state.my_openai_model}) ---")
 
 def on_indexname_change():
     name = st.session_state.my_indexname
@@ -97,7 +104,8 @@ def check_if_ready_to_index():
         st.session_state.index_button_disabled = False
 
 # App title
-st.set_page_config(page_title="Jetson Copilot - Build Index", menu_items=None)
+st.set_page_config(page_title="Eurotech Copilot - Build Index", menu_items=None)
+Settings.embed_model = HuggingFaceEmbedding(model_name="WhereIsAI/UAE-Large-V1", trust_remote_code=True)
 
 ### Building Index with Embedding Model
 def index_data():
@@ -108,9 +116,13 @@ def index_data():
             docs = []
             web_docs = []
             if st.session_state.num_of_files_to_read != 0:
-                reader = SimpleDirectoryReader(input_dir=st.session_state.docspath, recursive=True)
-                st.write(    "Loading local docuements...")
-                logging.info("Loading local docuements...")
+                reader = SimpleDirectoryReader(
+                    input_dir=st.session_state.docspath, 
+                    recursive=True,
+                    file_extractor={".pdf": PyMuPDFReader()}
+                    )
+                st.write(    "Loading local documents...")
+                logging.info("Loading local documents...")
                 docs = reader.load_data()
                 st.write(    f"{len(docs)} local documents loaded.")
                 logging.info(f"{len(docs)} local documents loaded.")
@@ -118,20 +130,36 @@ def index_data():
                 logging.info("Building Index from local docs (using GPU)...")
                 index = VectorStoreIndex.from_documents(docs)
             if st.session_state.num_of_urls_to_read != 0:
-                st.write(    "Loading web docuemtns...")
-                logging.info("Loading web docuemtns...")
-                web_docs = SimpleWebPageReader(html_to_text=True).load_data(st.session_state.urllist)
-                st.write(    f"{len(web_docs)} web documents loaded.")
-                logging.info(f"{len(web_docs)} web documents loaded.")
-                logging.info(f"len(web_docs): {len(web_docs)}")
-                logging.info(f"web_docs[0]  : {web_docs[0]}")
-                st.write(    "Building Index from web docs (using GPU)...")
-                logging.info("Building Index from web docs (using GPU)...")
-                if 'index' not in locals():
-                    index = VectorStoreIndex.from_documents(web_docs)
-                else:
-                    for d in web_docs:
-                        index.insert(document = d)
+                st.write(    "Loading web documents...")
+                logging.info("Loading web documents...")
+
+                options = Options()
+                options.add_argument('--headless')
+                options.add_argument('--no-sandbox')
+                options.add_argument('--disable-dev-shm-usage')
+                options.add_argument('--remote-debugging-pipe')
+                driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+                for url in st.session_state.urllist:
+                    st.write(    f"Loading web documents from {url}...")
+
+                    scraper = WholeSiteReader(
+                        prefix=url,
+                        max_depth=st.session_state.web_crawling_depth,
+                        driver=driver
+                    )
+                    web_docs=(scraper.load_data(base_url=url))
+                    # web_docs = SimpleWebPageReader(html_to_text=True).load_data(st.session_state.urllist)
+                    st.write(    f"{len(web_docs)} web documents loaded from {url}.")
+                    logging.info(f"{len(web_docs)} web documents loaded from {url}.")
+                    logging.info(f"len(web_docs): {len(web_docs)}")
+                    st.write(    "Building Index from web docs (using GPU)...")
+                    logging.info("Building Index from web docs (using GPU)...")
+                    if 'index' not in locals():
+                        index = VectorStoreIndex.from_documents(web_docs)
+                    else:
+                        for d in web_docs:
+                            index.insert(document = d)
             st.write(    "Saving the built index to disk...")
             logging.info("Saving the built index to disk...")
             index.storage_context.persist(persist_dir=st.session_state.index_path_to_be_created)
@@ -157,18 +185,23 @@ def index_data():
 # Side bar
 with st.sidebar:
     st.title("Building Index")
+    st.image(ETH_LOGO, use_column_width=True)    
+    # st.title(":airplane: Eurotech Copilot")
+    st.image(ECP_LOGO, width=300)    
     st.info('Build your own custom Index based on your local/online documents.')
 
     st.subheader("Embedding Model")
-    t1,t2 = st.tabs(['Local','OpenAI'])
+    t1,t2 = st.tabs(['Local','OpenAI'])    
     with t1:
-        models = [model["name"] for model in ollama.list()["models"]]
-        st.selectbox("Choose local embedding model", models, index=models.index("mxbai-embed-large:latest"), key='my_local_model', on_change=on_local_model_change)
+        #models = [model["name"] for model in ollama.list()["models"]]
+        models = ["WhereIsAI/UAE-Large-V1"]
+        st.selectbox("Choose local embedding model", models, index=models.index("WhereIsAI/UAE-Large-V1"), key='my_local_model', on_change=on_local_model_change)
     with t2:
-        openai.api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
-        os.environ["OPENAI_API_KEY"] = openai.api_key
-        logging.info(f"> openai.api_key = {openai.api_key}")
-        st.selectbox("Choose OpenAI embedding model", ["-- Choose from below --", "text-embedding-3-large", "text-embedding-3-small", "text-embedding-ada-002"], index=0, key='my_openai_model', on_change=on_openai_model_change)
+        # openai.api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
+        # os.environ["OPENAI_API_KEY"] = openai.api_key
+        # logging.info(f"> openai.api_key = {openai.api_key}")
+        st.selectbox("Choose OpenAI embedding model", ["-- Choose from below --", "text-embedding-3-large", "text-embedding-3-small", "text-embedding-ada-002"], index=0, key='my_openai_model')
+    
     use_customized_chunk = st.toggle("Customize chunk parameters", value=False)
     if use_customized_chunk:
         Settings.chunk_size = st.slider("Chunk size", 100, 5000, 1024, key='my_chunk_size', on_change=on_settings_change)
@@ -176,13 +209,21 @@ with st.sidebar:
         logging.info(f"> Settings.chunk_size    = {Settings.chunk_size}")
         logging.info(f"> Settings.chunk_overlap = {Settings.chunk_overlap}")
 
+    use_customized_web_crawler = st.toggle("Customize web crawling parameters", value=False)
+    if use_customized_web_crawler:
+        st.session_state.web_crawling_depth = st.slider("Depth", 0, 10, 2, key='my_crawling_depth')
+    else:
+        st.session_state.web_crawling_depth = 2
+
+    st.page_link("app.py", label="Back to home", icon="🏠")
+
 st.subheader("Index Name")
 index_name = st.text_input("Enter the name for your new index", key='my_indexname', on_change=on_indexname_change)
 container_name = st.container()
 
 st.subheader('Local documents')
 subdirs = utils.func.get_subdirectories(const.DOC_ROOT_PATH)
-st.selectbox("Select the path to the local directory that you had stored your documents", subdirs, key='docspath', on_change=on_docspath_change)
+st.selectbox("Select the path to the local directory used to store your documents", subdirs, key='docspath', on_change=on_docspath_change)
 container_docs = st.container()
 if len(subdirs) != 0:
     on_docspath_change()
@@ -190,7 +231,7 @@ else:
     st.session_state.num_of_files_to_read = 0
 
 st.subheader('Online documents')
-list_urls = st.text_area("List of URLs (one per a line)", key='my_urllist', on_change=on_urllist_change)
+list_urls = st.text_area("List of URLs (one per line)", key='my_urllist', on_change=on_urllist_change)
 container_urls = st.container()
 
 st.warning("Check the model and its configurations on the sidebar (⬅️) and then hit the button below to build a new Index.", icon="⚠️")
@@ -198,10 +239,8 @@ st.warning("Check the model and its configurations on the sidebar (⬅️) and t
 container_settings = st.container()
 
 check_if_ready_to_index()
-logging.info(f"Setting Embedding model... {Settings.embed_model}")
+#logging.info(f"Setting Embedding model... {Settings.embed_model}")
 
 st.button("Build Index", on_click=index_data, key='my_button', disabled=st.session_state.get("index_button_disabled", True))
 container_status = st.container()
 container_result = st.container()
-
-st.page_link("app.py", label="Back to home", icon="🏠")
