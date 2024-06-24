@@ -30,7 +30,7 @@ import utils.func
 import utils.constants as const
 
 # App title
-st.set_page_config(page_title="Jetson Copilot", menu_items=None)
+st.set_page_config(page_title="Eurotech Copilot", menu_items=None)
 
 AVATAR_AI   = Image.open('./images/ecp_agent.png')
 AVATAR_USER = Image.open('./images/ecp_user.png')
@@ -85,6 +85,14 @@ def reload_index():
                 st.session_state.index = load_index(st.session_state.index_name)
                 logging.info(f" ### Loading Index '{st.session_state.index_name}' completed.")
 
+def clear_history():
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Ask me any question about Eurotech!", "avatar": AVATAR_AI}
+    ]
+    if st.session_state.index != None:
+        logging.info("> clearing chat context")
+        st.session_state.chat_engine.reset()
+
 # Side bar
 with st.sidebar:        
     # # Add css to make text smaller
@@ -92,7 +100,8 @@ with st.sidebar:
     #     """<style>textarea { font-size: 0.8rem !important; } </style>""",
     #     unsafe_allow_html=True,
     # )
-    st.image(ETH_LOGO, use_column_width=True)    
+    st.logo(ETH_LOGO)
+    # st.image(ETH_LOGO, use_column_width=True)    
     # st.title(":airplane: Eurotech Copilot")
     st.image(ECP_LOGO, width=300)    
 
@@ -169,7 +178,7 @@ with st.sidebar:
                     retriever= retriever,
                     system_prompt= system_prompt,    
                     context_template= context_prompt,
-                    node_postprocessors=[SentenceTransformerRerank(model="cross-encoder/ms-marco-MiniLM-L-4-v2", top_n=top_n)]
+                    node_postprocessors=[SentenceTransformerRerank(model="cross-encoder/ms-marco-MiniLM-L-4-v2", top_n=top_n)],                    
                 )
 
                 # st.session_state.chat_engine = st.session_state.index.as_chat_engine(
@@ -181,15 +190,12 @@ with st.sidebar:
                 #     verbose=True)
 
 # initialize history
-if "messages" not in st.session_state.keys():
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Ask me any question about Eurotech!", "avatar": AVATAR_AI}
-    ]
-if "old_index_name" not in st.session_state.keys():
-    st.session_state.old_index_name = ''
-
 if "index" not in st.session_state.keys():
     st.session_state.index = None
+if "messages" not in st.session_state.keys():
+    clear_history()
+if "old_index_name" not in st.session_state.keys():
+    st.session_state.old_index_name = ''
 
 def model_res_generator(prompt=""):
     if use_index:
@@ -219,7 +225,6 @@ def model_res_generator(prompt=""):
 for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar=message["avatar"]):
         st.markdown(message["content"])
-
 if prompt := st.chat_input("Enter prompt here..."):    
     # add latest message to history in format {role, content}
     st.session_state.messages.append({"role": "user", "content": prompt, "avatar": AVATAR_USER})
@@ -227,8 +232,10 @@ if prompt := st.chat_input("Enter prompt here..."):
     with st.chat_message("user", avatar=AVATAR_USER):
         st.markdown(prompt)
 
+# if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant", avatar=AVATAR_AI):
         with st.spinner("Thinking..."):
             time.sleep(1)
             message = st.write_stream(model_res_generator(prompt))
+            st.button("clear conversation context", on_click=clear_history)
             st.session_state.messages.append({"role": "assistant", "content": message, "avatar": AVATAR_AI})
