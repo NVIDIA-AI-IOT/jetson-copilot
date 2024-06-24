@@ -2,6 +2,7 @@
 #import openai
 import streamlit as st
 import pandas as pd
+import chromadb
 
 from llama_index.core import VectorStoreIndex, Settings, SimpleDirectoryReader
 from llama_index.llms.ollama import Ollama
@@ -18,6 +19,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from llama_index.vector_stores.chroma import ChromaVectorStore
+from llama_index.core import StorageContext
 
 from PIL import Image
 import time
@@ -45,7 +48,8 @@ def on_local_model_change():
 
 def on_indexname_change():
     name = st.session_state.my_indexname
-    name = utils.func.make_valid_directory_name(name)
+    vector_engine = st.session_state.vector_db
+    name = utils.func.make_valid_directory_name(name, vector_engine)
     if os.path.exists(os.path.join(const.INDEX_ROOT_PATH, name)):
         with container_name:
             st.error('The title name is not valid', icon="🚨")
@@ -53,7 +57,12 @@ def on_indexname_change():
         st.session_state.index_path_to_be_created = f"{const.INDEX_ROOT_PATH}/{name}"
         st.session_state.index_name = f"{name}"
         with container_name:
-            st.markdown(f"`{st.session_state.index_path_to_be_created}` will be created")
+            if vector_engine == 0:
+                st.markdown(f"`{st.session_state.index_path_to_be_created}` will be created")
+            if vector_engine == 1:
+                st.markdown(f"Collection `{st.session_state.index_name}` will be created inside ChromaDB")
+            if vector_engine == 2:
+                st.markdown(f"Collection `{st.session_state.index_name}` will be created inside Milvus")
 
 def on_docspath_change():
     logging.info("### on_docspath_change")
@@ -103,6 +112,45 @@ def check_if_ready_to_index():
         logging.info("### check_if_ready_to_index() ---> Ready")
         st.session_state.index_button_disabled = False
 
+def get_vector_engine_name():
+    if st.session_state.vector_db == 1:
+        return "ChromaDB"
+    if st.session_state.vector_db == 2:
+        return "Milvus"
+    return "JSON"
+
+def create_index(docs):
+    if st.session_state.vector_db == 1:
+        logging.info("### Creating ChromaDB Index...")
+        db = chromadb.PersistentClient(path="./chromadb")
+        chroma_collection = db.get_or_create_collection(st.session_state.index_name)
+        vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+        storage_context = StorageContext.from_defaults(vector_store=vector_store)
+        index = VectorStoreIndex.from_documents(
+            docs, 
+            storage_context=storage_context
+        )
+        return index
+    if st.session_state.vector_db == 2:
+        # TODO
+        return None
+
+    logging.info("### Creating Simple JSON Index...")
+    return VectorStoreIndex.from_documents(docs)
+
+def persist_index(index):
+    if st.session_state.vector_db == 1:
+        # ChromaDB
+        # should store automatically
+        return
+    if st.session_state.vector_db == 2:
+        # TODO
+        return
+    
+    # JSON
+    index.storage_context.persist(persist_dir=st.session_state.index_path_to_be_created)
+
+
 # App title
 st.set_page_config(page_title="Eurotech Copilot - Build Index", menu_items=None)
 Settings.embed_model = HuggingFaceEmbedding(model_name="WhereIsAI/UAE-Large-V1", trust_remote_code=True)
@@ -113,6 +161,7 @@ def index_data():
         start_time = time.time()
         with st.status("Indexing documents..."):
             logging.info(f"Setting Embedding model... {Settings.embed_model}")
+            logging.info(f"Setting Vecor DB Engine... {get_vector_engine_name()}")
             docs = []
             web_docs = []
             if st.session_state.num_of_files_to_read != 0:
@@ -128,7 +177,8 @@ def index_data():
                 logging.info(f"{len(docs)} local documents loaded.")
                 st.write(    "Building Index from local docs (using GPU)...")
                 logging.info("Building Index from local docs (using GPU)...")
-                index = VectorStoreIndex.from_documents(docs)
+
+                index = create_index(docs)
             if st.session_state.num_of_urls_to_read != 0:
                 st.write(    "Loading web documents...")
                 logging.info("Loading web documents...")
@@ -156,13 +206,13 @@ def index_data():
                     st.write(    "Building Index from web docs (using GPU)...")
                     logging.info("Building Index from web docs (using GPU)...")
                     if 'index' not in locals():
-                        index = VectorStoreIndex.from_documents(web_docs)
+                        index = create_index(web_docs)
                     else:
                         for d in web_docs:
                             index.insert(document = d)
             st.write(    "Saving the built index to disk...")
             logging.info("Saving the built index to disk...")
-            index.storage_context.persist(persist_dir=st.session_state.index_path_to_be_created)
+            persist_index(index)
             st.write(    "Indexing done!")
             logging.info("Indexing done!")
         end_time = time.time()
@@ -181,6 +231,9 @@ def index_data():
     with container_result:
         st.markdown(md)
         logging.info(md)
+
+if "vector_db" not in st.session_state.keys():
+    st.session_state.vector_db = 0
 
 # Side bar
 with st.sidebar:
@@ -202,6 +255,14 @@ with st.sidebar:
         # logging.info(f"> openai.api_key = {openai.api_key}")
         st.selectbox("Choose OpenAI embedding model", ["-- Choose from below --", "text-embedding-3-large", "text-embedding-3-small", "text-embedding-ada-002"], index=0, key='my_openai_model')
     
+    v_idx = st.radio("Choose your preferred Vector Database", ["JSON","ChromaDB", "Milvus"], index=st.session_state.vector_db)
+    if v_idx == "JSON":
+        st.session_state.vector_db = 0
+    elif v_idx == "ChromaDB":
+        st.session_state.vector_db = 1
+    elif v_idx == "Milvus":
+        st.session_state.vector_db = 2
+
     use_customized_chunk = st.toggle("Customize chunk parameters", value=False)
     if use_customized_chunk:
         Settings.chunk_size = st.slider("Chunk size", 100, 5000, 1024, key='my_chunk_size', on_change=on_settings_change)

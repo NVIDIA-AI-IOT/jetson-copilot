@@ -2,6 +2,7 @@ import ollama
 # import openai
 import streamlit as st
 import docker
+import chromadb
 
 from llama_index.core import VectorStoreIndex, Settings, SimpleDirectoryReader
 from llama_index.core import load_index_from_storage, StorageContext
@@ -17,6 +18,8 @@ from llama_index.core.llms import ChatMessage, MessageRole
 #from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core.postprocessor import SentenceTransformerRerank
 from llama_index.core.chat_engine import ContextChatEngine
+from llama_index.vector_stores.chroma import ChromaVectorStore
+from llama_index.core import StorageContext
 
 from PIL import Image
 import time
@@ -29,6 +32,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 import utils.func 
 import utils.constants as const
 
+chroma_db = chromadb.PersistentClient(path="./chromadb")
 # App title
 st.set_page_config(page_title="Eurotech Copilot", menu_items=None)
 
@@ -60,15 +64,37 @@ DO NOT start the response with the statement 'According to the provided document
 )
 
 def find_saved_indexes():
-    return utils.func.list_directories(const.INDEX_ROOT_PATH)
+    json_collections = utils.func.list_directories(const.INDEX_ROOT_PATH)    
+    chroma_collections = chroma_db.list_collections()
+    result = []
+    for coll in json_collections:
+        result.append(coll)
+    for coll in chroma_collections:        
+        result.append(coll.name)
+    return result
 
 def load_index(index_name):
     Settings.embed_model = HuggingFaceEmbedding(model_name="WhereIsAI/UAE-Large-V1", 
                                             trust_remote_code=True) #TODO
-    dir = f"{const.INDEX_ROOT_PATH}/{index_name}"
-    storage_context = StorageContext.from_defaults(persist_dir=dir)
-    index = load_index_from_storage(storage_context)
-    return index
+    if(index_name.startswith('0')):
+        # JSON
+        dir = f"{const.INDEX_ROOT_PATH}/{index_name}"
+        storage_context = StorageContext.from_defaults(persist_dir=dir)
+        index = load_index_from_storage(storage_context)
+        return index
+    if(index_name.startswith('1')):
+        # ChromaDB
+        chroma_collection = chroma_db.get_or_create_collection(index_name)
+        vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+        index = VectorStoreIndex.from_vector_store(
+            vector_store
+        )
+        return index
+    if(index_name.startswith('2')):
+        # Milvus
+        # TODO
+        return None
+    return None
 
 def format_model_name(model):
     print(model)

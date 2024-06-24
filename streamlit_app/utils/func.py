@@ -36,12 +36,18 @@ def list_directories(directory):
 
 ### Below for build_index.py
 
-def make_valid_directory_name(name):
+def make_valid_directory_name(name, vector_engine):
     """
     Sanitize a given name to be a valid Linux directory name.
 
     Parameters:
     name (str): The name to be sanitized.
+
+    Parameters:
+    vector_engine (int): Vector Engine used for the index.
+    0 - Simple JSON
+    1 - ChromaDB
+    2 - Milvus
 
     Returns:
     str: A valid Linux directory name.
@@ -66,7 +72,7 @@ def make_valid_directory_name(name):
     if sanitized_name.startswith('-'):
         sanitized_name = '_' + sanitized_name[1:]
     
-    return sanitized_name
+    return str(vector_engine)+"_"+sanitized_name
 
 def is_valid_url(url):
     """
