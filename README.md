@@ -38,6 +38,7 @@ It will install the following, if not yet.
 > [!IMPORTANT]
 > 
 > It also adds the current user into `docker` group using `newgrp` command.
+>
 > Check to see if you can just issue the following command (without using `sudo`).
 > 
 > ```bash
