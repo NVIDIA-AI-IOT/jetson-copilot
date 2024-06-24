@@ -1,0 +1,8 @@
+docker_py==1.10.6
+llama_index==0.10.48.post1
+ollama==0.2.1
+pandas==2.2.2
+Pillow==10.3.0
+selenium==4.22.0
+streamlit==1.36.0
+webdriver_manager==4.0.1

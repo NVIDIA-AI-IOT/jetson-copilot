@@ -7,6 +7,7 @@ logs/*
 !logs/README.md
 ollama_models/*
 !ollama_models/README.md
+.venv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
