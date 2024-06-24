@@ -35,6 +35,18 @@ It will install the following, if not yet.
 - Chromium web browser
 - Docker
 
+> [!IMPORTANT]
+> 
+> It also adds the current user into `docker` group using `newgrp` command.
+> Check to see if you can just issue the following command (without using `sudo`).
+> 
+> ```bash
+> docker ps
+> ```
+> 
+> If you get `permission denied` error, exit from the session (by executing `exit` command) and log/ssh back in.<br>
+> You should now be able to issue `docker ps`.
+
 ### How to start Jetson Copilot
 
 ```bash
