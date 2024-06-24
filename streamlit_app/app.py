@@ -157,6 +157,7 @@ with st.sidebar:
         st.page_link("pages/download_model.py", label=" Download a new LLM", icon="➕")
         Settings.llm = Ollama(model=st.session_state["model"][0], request_timeout=300.0)        
     else:
+        print(dockerClient.containers.list())
         models = [[container.labels["com.nvidia.nim.model"], container.labels["llm_port"]] for container in dockerClient.containers.list()]
         st.session_state["model"] = st.selectbox("Choose your LLM", models, format_func=format_model_name, index=0)
         logging.info(f"> NVIDIA NIM model = {st.session_state.model}")
@@ -181,11 +182,11 @@ with st.sidebar:
         st.page_link("pages/build_index.py", label=" Build a new index", icon="➕")
 
         top_k = 40
-        top_n = 7
+        top_n = 3
         use_custom_params = st.toggle("Customize retrieval options", value=False)
         if use_custom_params:
             top_k = st.slider("top k", 4, 100, 40, key='my_top_k_size')
-            top_n = st.slider("top n", 1, 10, 7, key='my_top_n_size')
+            top_n = st.slider("top n", 1, 10, 3, key='my_top_n_size')
             logging.info(f"> Top_K    = {top_k}")
             logging.info(f"> Top_N = {top_n}")
 
@@ -204,7 +205,7 @@ with st.sidebar:
                     retriever= retriever,
                     system_prompt= system_prompt,    
                     context_template= context_prompt,
-                    node_postprocessors=[SentenceTransformerRerank(model="cross-encoder/ms-marco-MiniLM-L-4-v2", top_n=top_n)],                    
+                    node_postprocessors=[SentenceTransformerRerank(model="cross-encoder/ms-marco-MiniLM-L-4-v2", top_n=top_n)],                                                            
                 )
 
                 # st.session_state.chat_engine = st.session_state.index.as_chat_engine(
