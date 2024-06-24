@@ -223,5 +223,6 @@ Pushed to public, still partially in development.
 
 ### TODO
 
-- [ ] LLM download UI (`download_model.py`)
+- [x] LLM download UI (`download_model.py`)
 - [ ] Use `faiss` for Vector DB
+- [ ] Support OpenAI embedding models
