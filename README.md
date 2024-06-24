@@ -45,7 +45,7 @@ It will install the following, if not yet.
 > docker ps
 > ```
 > 
-> If you get `permission denied` error, exit from the session (by executing `exit` command) and log/ssh back in.<br>
+> If you get `permission denied` error, exit from the session (by executing `exit` command), reboot if possible (so that it will take effect in any sessions), and log/ssh back in.<br>
 > You should now be able to issue `docker ps`.
 
 ### How to start Jetson Copilot
@@ -212,7 +212,36 @@ Following directories inside the `jetson-copilot` directory are mounted in the D
 
 ## 💫 Troubleshooting
 
-If you find any issue, please check [GitHub Issues of the Jetson Copilot repo](https://github.com/NVIDIA-AI-IOT/jetson-copilot/issues).
+If you find any issue, please check [GitHub Issues of the Jetson Copilot repo](https://github.com/NVIDIA-AI-IOT/jetson-copilot/issues) and file an issue there.
+
+### `permission denied`
+
+If you get "**permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock**" issue, your current user account in Linux may not be added to the group `docker` and/or the change is not taking effect yet.
+
+So issue the following commands to ensure you add your user account in the group, and exit from the current session, reboot if possible (so that it will take effect in any sessions), then log/ssh back in.
+
+```bash
+sudo systemctl restart docker
+sudo usermod -aG docker $USER
+newgrp docker
+exit
+```
+
+You can check if you succeed by issuing `docker ps`.
+
+### `unable to setup input stream`
+
+If you run `launch_jetson_copilot.sh` and get "**unable to setup input stream: unable to set IO streams as raw terminal: input/output error**", then you can just use the `launch_dev.sh` and manually start the streamlit app.
+
+```bash
+./launch_dev.sh
+```
+
+And once in the container;
+
+```bash
+streamlit run app.py
+```
 
 ## Supposed usage
 
