@@ -1,5 +1,7 @@
 # Jetson Copilot
 
+![](./JC-Banner_1280x480.png)
+
 Jetson Copilot is a reference application for a ***local*** AI assistant.
 
 It deonstrates two things;
