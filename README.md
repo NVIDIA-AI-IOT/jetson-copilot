@@ -4,10 +4,10 @@
 
 Jetson Copilot is a reference application for a ***local*** AI assistant.
 
-It deonstrates two things;
+It demonstrates two things;
 
 - Running open-source LLMs (large language model) on device
-- Augumenting the LLM to have access to your locally indexed knowledge (**RAG**, retrieval-augmented generation)
+- Augmenting the LLM to have access to your locally indexed knowledge (**RAG**, retrieval-augmented generation)
 
 > [!IMPORTANT]
 > 
@@ -71,7 +71,7 @@ Network URL: http://10.110.50.252:8501
 > [!NOTE]
 > You will need the Internet connection on Jetson when it launches for the first time, as it will pull the container image (and download the default LLM and embedding model when web UI starts for the first time).
 
-When you access the web UI for the first time, it will dowload the default LLM (`llama3`) and the embedding model (`mxbai-embed-large`).
+When you access the web UI for the first time, it will download the default LLM (`llama3`) and the embedding model (`mxbai-embed-large`).
 
 > [!TIP]
 > If you are on Ubuntu Desktop, a frameless Chromium window will pop up to access the web app, to make it look like an independent application.
@@ -85,7 +85,7 @@ When you access the web UI for the first time, it will dowload the default LLM (
 
 https://github.com/NVIDIA-AI-IOT/jetson-copilot/assets/25759564/6aed539c-08b3-448f-8cbc-3e20abfa782f
 
-You can use Jetson Copilot just to interact with a LLM withut enabling RAG feature.
+You can use Jetson Copilot just to interact with a LLM without enabling RAG feature.
 
 By default, Llama3 (8b) model is downloaded when running for the first time and use as the default LLM.
 
@@ -205,7 +205,7 @@ Following directories inside the `jetson-copilot` directory are mounted in the D
 
 | Directory Name | Description |
 | -------------- | ----------- |
-| `Docuemtns`    | Directory to store your documents to be indexed |
+| `Documents`    | Directory to store your documents to be indexed |
 | `Indexes`      | Directory to store pre-built (or built-by-you) indexes for LLM to perform RAG on |
 | `logs`         | Directory for the app to store log files |
 | `ollama_models`| Directory for the ollama server to store download models |
@@ -245,7 +245,7 @@ And once in the container;
 streamlit run app.py
 ```
 
-## Supposed usage
+## Proposed usage
 
 You can use Jetson Copilot in multiple ways.
 
@@ -253,11 +253,11 @@ You can use Jetson Copilot in multiple ways.
 
 Users can easily run an LLM on Jetson without relying on any cloud services.<br>
 
-They may find the AI assistantce on some tasks useful, like to find out the right  command to use on Linux system. They can even expand the LLM knowledge by building the local index based on their own documents that LLM can access.
+They may find the AI assistance on some tasks useful, like to find out the right  command to use on Linux system. They can even expand the LLM knowledge by building the local index based on their own documents that LLM can access.
 
-### Reference for budling a custom AI assistant
+### Reference for building a custom AI assistant
 
-Developers can use Jetson Copilot as a reference for building their own AI assistant that poseses some specific domain area's or product's knowledge.
+Developers can use Jetson Copilot as a reference for building their own AI assistant that possesses some specific domain area's or product's knowledge.
 
 ## ⚖️ License
 Please see LICENSE file.
