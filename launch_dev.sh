@@ -88,6 +88,14 @@ if [ $ARCH = "aarch64" ]; then
         CONTAINER_TAG="r36.3.0"
     fi
 
+    if [ -z "$1" ]; then
+        # No argument supplied, use the default container image hosted on Docker Hub
+        CONTIANER_IMAGE="dustynv/jetrag:$CONTAINER_TAG"
+    else
+        # Argument supplied, use the specified (potentially local) Docker container image
+        CONTIANER_IMAGE=$1
+    fi
+
 	# this file shows what Jetson board is running
 	# /proc or /sys files aren't mountable into docker
 	cat /proc/device-tree/model > /tmp/nv_jetson_model
@@ -108,7 +116,7 @@ if [ $ARCH = "aarch64" ]; then
             --device /dev/snd \
             --device /dev/bus/usb \
             $DATA_VOLUME $DISPLAY_DEVICE $V4L2_DEVICES $I2C_DEVICES $JTOP_SOCKET $EXTRA_FLAGS \
-            dustynv/jetrag:$CONTAINER_TAG \
+            $CONTIANER_IMAGE \
             bash -c '/start_ollama && \
                 cd /opt/jetson_copilot/app && \
                 /bin/bash'
