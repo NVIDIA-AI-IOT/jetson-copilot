@@ -10,6 +10,9 @@ from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import SummaryIndex
 from llama_index.readers.web import SimpleWebPageReader
+from llama_index.core.readers.base import BaseReader
+from llama_index.core import Document
+from typing import Dict, Type
 
 from PIL import Image
 import time
@@ -24,6 +27,16 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, parent_dir)
 import utils.func 
 import utils.constants as const
+
+class ExcelReader(BaseReader):
+    def load_data(self, file_path: str, extra_info: dict = None):
+        data = pd.read_excel(file_path).to_string()
+        return [Document(text=data, metadata=extra_info)]
+    
+DEFAULT_FILE_READER_CLS: Dict[str, Type[BaseReader]] = {
+    ".xlsx": ExcelReader,
+    ".xls": ExcelReader,
+}
 
 def on_settings_change():
     logging.info(" --- settings updated ---")
@@ -50,6 +63,7 @@ def on_indexname_change():
 
 def on_docspath_change():
     logging.info("### on_docspath_change")
+    st.session_state['docpath_untouched'] = False
     dir = st.session_state.docspath
     with container_docs:
         with st.spinner('Checking files under the direcotry...'):
@@ -184,10 +198,12 @@ st.subheader('Local documents')
 subdirs = utils.func.get_subdirectories(const.DOC_ROOT_PATH)
 st.selectbox("Select the path to the local directory that you had stored your documents", subdirs, key='docspath', on_change=on_docspath_change)
 container_docs = st.container()
-if len(subdirs) != 0:
-    on_docspath_change()
-else:
+if 'docpath_untouched' not in st.session_state:
+    st.session_state['docpath_untouched'] = True
     st.session_state.num_of_files_to_read = 0
+if len(subdirs) != 0 and st.session_state['docpath_untouched']:
+    logging.info(f"################ st.session_state['docpath_untouched']: {st.session_state['docpath_untouched']}")
+    on_docspath_change()
 
 st.subheader('Online documents')
 list_urls = st.text_area("List of URLs (one per a line)", key='my_urllist', on_change=on_urllist_change)
