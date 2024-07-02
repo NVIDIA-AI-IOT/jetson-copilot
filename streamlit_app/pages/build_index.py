@@ -46,7 +46,7 @@ def on_local_model_change():
     logging.info(f" --- Settings.embed_model=OllamaEmbedding(model_name={st.session_state.my_local_model}) ---")
 
 def on_openai_model_change():
-    Settings.embed_model = OpenAIEmbedding(model_name=st.session_state.my_openai_model, dimeonsions=1024)
+    Settings.embed_model = OpenAIEmbedding(model_name=st.session_state.my_openai_model, dimensions=1024)
     logging.info(f" --- Settings.embed_model=OpenAIEmbedding(model_name={st.session_state.my_openai_model}) ---")
 
 def on_indexname_change():
@@ -66,7 +66,7 @@ def on_docspath_change():
     st.session_state['docpath_untouched'] = False
     dir = st.session_state.docspath
     with container_docs:
-        with st.spinner('Checking files under the direcotry...'):
+        with st.spinner('Checking files under the directory...'):
             files = utils.func.get_files_with_extensions(dir, const.SUPPORTED_FILE_TYPES)
             total_docs_size = utils.func.get_total_size_mib(dir)
             md = f"**`{len(files)}`** files found! (Total file size: **`{total_docs_size:,.2f}`** MiB)"
@@ -123,8 +123,8 @@ def index_data():
             web_docs = []
             if st.session_state.num_of_files_to_read != 0:
                 reader = SimpleDirectoryReader(input_dir=st.session_state.docspath, recursive=True)
-                st.write(    "Loading local docuements...")
-                logging.info("Loading local docuements...")
+                st.write(    "Loading local documents...")
+                logging.info("Loading local documents...")
                 docs = reader.load_data()
                 st.write(    f"{len(docs)} local documents loaded.")
                 logging.info(f"{len(docs)} local documents loaded.")
@@ -132,8 +132,8 @@ def index_data():
                 logging.info("Building Index from local docs (using GPU)...")
                 index = VectorStoreIndex.from_documents(docs)
             if st.session_state.num_of_urls_to_read != 0:
-                st.write(    "Loading web docuemtns...")
-                logging.info("Loading web docuemtns...")
+                st.write(    "Loading web documents...")
+                logging.info("Loading web documents...")
                 web_docs = SimpleWebPageReader(html_to_text=True).load_data(st.session_state.urllist)
                 st.write(    f"{len(web_docs)} web documents loaded.")
                 logging.info(f"{len(web_docs)} web documents loaded.")
@@ -161,7 +161,7 @@ def index_data():
 
     The index is saved under `{st.session_state.index_path_to_be_created}` and the total size of this index is **`{total_size_mib:.2f}`** MiB. 
 
-    The indexing task took **`{elapsed_time:.1f}`** seconds to competele.
+    The indexing task took **`{elapsed_time:.1f}`** seconds to complete.
     """
 
     with container_result:
