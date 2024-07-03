@@ -79,7 +79,7 @@ if [ $ARCH = "aarch64" ]; then
     verions_numbers=(${L4T_VERSION//./ })
 	L4T_VERSION_MAJOR=${verions_numbers[0]}
 
-    # https://hub.docker.com/r/dustynv/jetrag/tags
+    # https://hub.docker.com/r/dustynv/jetson-copilot/tags
 	if [ "$L4T_VERSION_MAJOR" == "35" ]; then
 		log "JetPack 5.x :"
         CONTAINER_TAG="r35.4.1"
@@ -90,7 +90,7 @@ if [ $ARCH = "aarch64" ]; then
 
     if [ -z "$1" ]; then
         # No argument supplied, use the default container image hosted on Docker Hub
-        CONTIANER_IMAGE="dustynv/jetrag:$CONTAINER_TAG"
+        CONTIANER_IMAGE="dustynv/jetson-copilot:$CONTAINER_TAG"
     else
         # Argument supplied, use the specified (potentially local) Docker container image
         CONTIANER_IMAGE=$1

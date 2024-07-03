@@ -108,7 +108,7 @@ if [ $ARCH = "aarch64" ]; then
             --device /dev/snd \
             --device /dev/bus/usb \
             $DATA_VOLUME $DISPLAY_DEVICE $V4L2_DEVICES $I2C_DEVICES $JTOP_SOCKET $EXTRA_FLAGS \
-            dustynv/jetrag:$CONTAINER_TAG \
+            dustynv/jetson-copilot:$CONTAINER_TAG \
             bash -c '/start_ollama && cd /opt/jetson_copilot/app/ && streamlit run ./app.py' \
             | tee  -a ./logs/container.log & pid=$!
     PID_LIST+=" $pid"
