@@ -79,13 +79,21 @@ if [ $ARCH = "aarch64" ]; then
     verions_numbers=(${L4T_VERSION//./ })
 	L4T_VERSION_MAJOR=${verions_numbers[0]}
 
-    # https://hub.docker.com/r/dustynv/jetrag/tags
+    # https://hub.docker.com/r/dustynv/jetson-copilot/tags
 	if [ "$L4T_VERSION_MAJOR" == "35" ]; then
 		log "JetPack 5.x :"
         CONTAINER_TAG="r35.4.1"
 	elif [ "$L4T_VERSION_MAJOR" == "36" ]; then
 		log "JetPack 6.x :"
         CONTAINER_TAG="r36.3.0"
+    fi
+
+    if [ -z "$1" ]; then
+        # No argument supplied, use the default container image hosted on Docker Hub
+        CONTIANER_IMAGE="dustynv/jetson-copilot:$CONTAINER_TAG"
+    else
+        # Argument supplied, use the specified (potentially local) Docker container image
+        CONTIANER_IMAGE=$1
     fi
 
 	# this file shows what Jetson board is running
@@ -108,7 +116,7 @@ if [ $ARCH = "aarch64" ]; then
             --device /dev/snd \
             --device /dev/bus/usb \
             $DATA_VOLUME $DISPLAY_DEVICE $V4L2_DEVICES $I2C_DEVICES $JTOP_SOCKET $EXTRA_FLAGS \
-            dustynv/jetrag:$CONTAINER_TAG \
+            $CONTIANER_IMAGE \
             bash -c '/start_ollama && \
                 cd /opt/jetson_copilot/app && \
                 /bin/bash'

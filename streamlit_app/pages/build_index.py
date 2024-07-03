@@ -10,6 +10,9 @@ from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import SummaryIndex
 from llama_index.readers.web import SimpleWebPageReader
+from llama_index.core.readers.base import BaseReader
+from llama_index.core import Document
+from typing import Dict, Type
 
 from PIL import Image
 import time
@@ -25,6 +28,16 @@ sys.path.insert(0, parent_dir)
 import utils.func 
 import utils.constants as const
 
+class ExcelReader(BaseReader):
+    def load_data(self, file_path: str, extra_info: dict = None):
+        data = pd.read_excel(file_path).to_string()
+        return [Document(text=data, metadata=extra_info)]
+    
+DEFAULT_FILE_READER_CLS: Dict[str, Type[BaseReader]] = {
+    ".xlsx": ExcelReader,
+    ".xls": ExcelReader,
+}
+
 def on_settings_change():
     logging.info(" --- settings updated ---")
 
@@ -33,7 +46,7 @@ def on_local_model_change():
     logging.info(f" --- Settings.embed_model=OllamaEmbedding(model_name={st.session_state.my_local_model}) ---")
 
 def on_openai_model_change():
-    Settings.embed_model = OpenAIEmbedding(model_name=st.session_state.my_openai_model, dimeonsions=1024)
+    Settings.embed_model = OpenAIEmbedding(model_name=st.session_state.my_openai_model, dimensions=1024)
     logging.info(f" --- Settings.embed_model=OpenAIEmbedding(model_name={st.session_state.my_openai_model}) ---")
 
 def on_indexname_change():
@@ -50,9 +63,10 @@ def on_indexname_change():
 
 def on_docspath_change():
     logging.info("### on_docspath_change")
+    st.session_state['docpath_untouched'] = False
     dir = st.session_state.docspath
     with container_docs:
-        with st.spinner('Checking files under the direcotry...'):
+        with st.spinner('Checking files under the directory...'):
             files = utils.func.get_files_with_extensions(dir, const.SUPPORTED_FILE_TYPES)
             total_docs_size = utils.func.get_total_size_mib(dir)
             md = f"**`{len(files)}`** files found! (Total file size: **`{total_docs_size:,.2f}`** MiB)"
@@ -109,8 +123,8 @@ def index_data():
             web_docs = []
             if st.session_state.num_of_files_to_read != 0:
                 reader = SimpleDirectoryReader(input_dir=st.session_state.docspath, recursive=True)
-                st.write(    "Loading local docuements...")
-                logging.info("Loading local docuements...")
+                st.write(    "Loading local documents...")
+                logging.info("Loading local documents...")
                 docs = reader.load_data()
                 st.write(    f"{len(docs)} local documents loaded.")
                 logging.info(f"{len(docs)} local documents loaded.")
@@ -118,8 +132,8 @@ def index_data():
                 logging.info("Building Index from local docs (using GPU)...")
                 index = VectorStoreIndex.from_documents(docs)
             if st.session_state.num_of_urls_to_read != 0:
-                st.write(    "Loading web docuemtns...")
-                logging.info("Loading web docuemtns...")
+                st.write(    "Loading web documents...")
+                logging.info("Loading web documents...")
                 web_docs = SimpleWebPageReader(html_to_text=True).load_data(st.session_state.urllist)
                 st.write(    f"{len(web_docs)} web documents loaded.")
                 logging.info(f"{len(web_docs)} web documents loaded.")
@@ -147,7 +161,7 @@ def index_data():
 
     The index is saved under `{st.session_state.index_path_to_be_created}` and the total size of this index is **`{total_size_mib:.2f}`** MiB. 
 
-    The indexing task took **`{elapsed_time:.1f}`** seconds to competele.
+    The indexing task took **`{elapsed_time:.1f}`** seconds to complete.
     """
 
     with container_result:
@@ -184,10 +198,12 @@ st.subheader('Local documents')
 subdirs = utils.func.get_subdirectories(const.DOC_ROOT_PATH)
 st.selectbox("Select the path to the local directory that you had stored your documents", subdirs, key='docspath', on_change=on_docspath_change)
 container_docs = st.container()
-if len(subdirs) != 0:
-    on_docspath_change()
-else:
+if 'docpath_untouched' not in st.session_state:
+    st.session_state['docpath_untouched'] = True
     st.session_state.num_of_files_to_read = 0
+if len(subdirs) != 0 and st.session_state['docpath_untouched']:
+    logging.info(f"################ st.session_state['docpath_untouched']: {st.session_state['docpath_untouched']}")
+    on_docspath_change()
 
 st.subheader('Online documents')
 list_urls = st.text_area("List of URLs (one per a line)", key='my_urllist', on_change=on_urllist_change)
