@@ -78,6 +78,7 @@ if [ $ARCH = "aarch64" ]; then
 	
     verions_numbers=(${L4T_VERSION//./ })
 	L4T_VERSION_MAJOR=${verions_numbers[0]}
+	L4T_VERSION_MINOR=${verions_numbers[1]}
 
     # https://hub.docker.com/r/dustynv/jetrag/tags
 	if [ "$L4T_VERSION_MAJOR" == "35" ]; then
@@ -85,14 +86,18 @@ if [ $ARCH = "aarch64" ]; then
         CONTAINER_TAG="r35.4.1"
 	elif [ "$L4T_VERSION_MAJOR" == "36" ]; then
 		log "JetPack 6.x :"
-        CONTAINER_TAG="r36.3.0"
+        if [ "$L4T_VERSION_MINOR" == "3" ]; then
+            CONTAINER_TAG="r36.3.0"
+        else
+            CONTAINER_TAG="r36.4.0"
+        fi
     fi
 
 	# this file shows what Jetson board is running
 	# /proc or /sys files aren't mountable into docker
 	cat /proc/device-tree/model > /tmp/nv_jetson_model
 
-    docker run --runtime nvidia -it --rm --network host \
+    docker run --runtime nvidia --rm --network host \
             --volume /tmp/argus_socket:/tmp/argus_socket \
             --volume /etc/enctune.conf:/etc/enctune.conf \
             --volume /etc/nv_tegra_release:/etc/nv_tegra_release \
