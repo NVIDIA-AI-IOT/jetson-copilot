@@ -86,13 +86,11 @@ if [ $ARCH = "aarch64" ]; then
         CONTAINER_TAG="r35.4.1"
 	elif [ "$L4T_VERSION_MAJOR" == "36" ]; then
 		log "JetPack 6.x :"
-        if [ "L4T_VERSION_MINOR" == "3" ]; then
+        if [ "$L4T_VERSION_MINOR" == "3" ]; then
             CONTAINER_TAG="r36.3.0"
         else
             CONTAINER_TAG="r36.4.0"
         fi
-        echo "CONTAINER_TAG: $CONTAINER_TAG"
-        exit 1
     fi
 
 	# this file shows what Jetson board is running
